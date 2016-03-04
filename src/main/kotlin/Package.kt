@@ -66,35 +66,37 @@ class Package {
 		fun load(param: Load.Parameter);
 	}
 
-	fun on(body: Hooker.() -> Unit): Set<Hook> {
-		return Hooker(body).run()
-	}
-
-	class Hooker {
-		private val _callbacks: ArrayList<Any> = ArrayList();
-
-		constructor(body: Hooker.() -> Unit) {
-			this.body();
+	companion object {
+		fun on(body: Hooker.() -> Unit): Set<Hook> {
+			return Hooker(body).run()
 		}
 
-		fun load(body: (Load.Parameter) -> Unit) {
-			_callbacks.add(Builder.Load(body))
-		}
+		class Hooker {
+			private val _callbacks: ArrayList<Any> = ArrayList();
 
-		fun load(priority: Int, body: (Load.Parameter) -> Unit) {
-			_callbacks.add(Builder.Load(priority, body))
-		}
+			constructor(body: Hooker.() -> Unit) {
+				this.body();
+			}
 
-		fun run(): Set<Hook> {
-			return _callbacks.map {
-				when (it) {
-					is Load ->
-						Load.Hook(XposedBridge.hookLoadPackage(it))
+			fun load(body: (Load.Parameter) -> Unit) {
+				_callbacks.add(Builder.Load(body))
+			}
 
-					else ->
-						throw RuntimeException("unreachable")
-				}
-			}.toSet()
+			fun load(priority: Int, body: (Load.Parameter) -> Unit) {
+				_callbacks.add(Builder.Load(priority, body))
+			}
+
+			fun run(): Set<Hook> {
+				return _callbacks.map {
+					when (it) {
+						is Load ->
+							Load.Hook(XposedBridge.hookLoadPackage(it))
+
+						else ->
+							throw RuntimeException("unreachable")
+					}
+				}.toSet()
+			}
 		}
 	}
 }
