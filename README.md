@@ -30,5 +30,5 @@ dependencies {
 }
 ```
 
-[1]: http://forum.xda-developers.com/xposed/xposed-api-changelog-t2714067
+[1]: http://forum.xda-developers.com/showthread.php?t=3034811
 [2]: http://jitpack.io
