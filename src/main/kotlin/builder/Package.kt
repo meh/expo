@@ -1,7 +1,6 @@
 package meh.expo.builder;
 
 import de.robv.android.xposed.callbacks.XCallback;
-
 import meh.expo.Package as P;
 
 class Package {
