@@ -79,11 +79,11 @@ class Package {
 			}
 
 			fun load(body: (Load.Parameter) -> Unit) {
-				_callbacks.add(Builder.Load(body))
+				_callbacks.add(Builder.Load(body).build())
 			}
 
 			fun load(priority: Int, body: (Load.Parameter) -> Unit) {
-				_callbacks.add(Builder.Load(priority, body))
+				_callbacks.add(Builder.Load(priority, body).build())
 			}
 
 			fun run(): Set<Hook> {
