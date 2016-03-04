@@ -25,4 +25,25 @@ class Package {
 			}
 		}
 	}
+
+	class Resources {
+		private val _priority: Int;
+		private val _body:     (P.Resources.Parameter) -> Unit;
+
+		constructor(body: (P.Resources.Parameter) -> Unit)
+			: this(XCallback.PRIORITY_DEFAULT, body)
+
+		constructor(priority: Int, body: (P.Resources.Parameter) -> Unit) {
+			_priority = priority;
+			_body     = body;
+		}
+
+		fun build(): P.Resources {
+			return object : P.Resources(_priority) {
+				override fun resources(param: P.Resources.Parameter) {
+					_body(param);
+				}
+			}
+		}
+	}
 }
