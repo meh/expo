@@ -101,7 +101,6 @@ class Package {
 				_value.unhook()
 			}
 		}
-
 	}
 
 	interface IResources : IXposedHookInitPackageResources {
