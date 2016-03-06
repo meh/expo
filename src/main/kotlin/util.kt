@@ -31,3 +31,19 @@ fun Class<*>.method(name: String, vararg types: Class<*>): Method {
 fun<T> Class<*>.new(vararg params: Any): T {
 	return XposedHelpers.newInstance(this, *params) as T
 }
+
+fun Class<*>.__send__(name: String, vararg params: Any?): Any? {
+	return XposedHelpers.callStaticMethod(this, name, *params)
+}
+
+fun<T: Any> T.__send__(name: String, vararg params: Any?): Any? {
+	return XposedHelpers.callMethod(this, name, *params)
+}
+
+fun Method.call(vararg params: Any?): Any? {
+	return this.invoke(null, params)
+}
+
+fun Method.apply(obj: Any, vararg params: Any?): Any? {
+	return this.invoke(obj, params)
+}
