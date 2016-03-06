@@ -46,9 +46,9 @@ fun<T> Class<*>.new(vararg params: Any): T {
 }
 
 fun Method.call(vararg params: Any?): Any? {
-	return this.invoke(null, params)
+	return this.invoke(null, *params)
 }
 
 fun Method.apply(obj: Any, vararg params: Any?): Any? {
-	return this.invoke(obj, params)
+	return this.invoke(obj, *params)
 }
