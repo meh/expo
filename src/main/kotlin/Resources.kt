@@ -3,6 +3,10 @@ package meh.expo;
 import java.util.ArrayList;
 
 import android.content.res.XResources;
+import android.content.res.XModuleResources;
+import android.content.res.XResForwarder;
+import android.content.res.Resources as Res;
+
 import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 import meh.expo.builder.Resources as Builder;
 
@@ -10,7 +14,6 @@ import android.view.View;
 import android.graphics.Movie;
 import android.graphics.drawable.Drawable;
 import android.content.res.ColorStateList;
-import android.content.res.Resources as Res;
 import android.content.res.Resources.Theme;
 import android.content.res.XmlResourceParser;
 
@@ -83,7 +86,7 @@ class Resources(value: XResources) {
 	private val _value = value;
 
 	fun directory(): String {
-		return  _value.getResDir()
+		return _value.getResDir()
 	}
 
 	fun owner(construction: Boolean = false): String {
@@ -95,12 +98,28 @@ class Resources(value: XResources) {
 		}
 	}
 
+	fun module(path: String): Module {
+		return Module(XModuleResources.createInstance(path, _value))
+	}
+
+	fun replace(id: Int, value: Forwarder) {
+		_value.setReplacement(id, value.into());
+	}
+
 	fun replace(id: Int, value: Any) {
 		_value.setReplacement(id, value);
 	}
 
+	fun replace(name: String, value: Forwarder) {
+		_value.setReplacement(name, value.into());
+	}
+
 	fun replace(name: String, value: Any) {
 		_value.setReplacement(name, value);
+	}
+
+	fun replace(pkg: String, type: String, name: String, value: Forwarder) {
+		_value.setReplacement(pkg, type, name, value.into());
 	}
 
 	fun replace(pkg: String, type: String, name: String, value: Any) {
@@ -331,6 +350,30 @@ class Resources(value: XResources) {
 
 		fun equals(pkg: String, name: String, type: String, id: Int): Boolean {
 			return _value.equals(pkg, name, type, id)
+		}
+	}
+
+	class Forwarder(value: XResForwarder) {
+		private val _value = value;
+
+		fun resources(): Res {
+			return _value.getResources()
+		}
+		
+		fun id(): Int {
+			return _value.getId()
+		}
+
+		fun into(): XResForwarder {
+			return _value
+		}
+	}
+
+	class Module(value: XModuleResources) {
+		private val _value = value;
+
+		fun forward(id: Int): Forwarder {
+			return Forwarder(_value.fwd(id))
 		}
 	}
 }
