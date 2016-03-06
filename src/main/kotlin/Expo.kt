@@ -26,6 +26,12 @@ object Expo {
 		return XposedHelpers.getParameterTypes(*types)
 	}
 
+	fun service(name: String): IBinder {
+		return find("android.os.ServiceManager")
+			.method("getService", String::class)
+			.call("user.${name}") as IBinder
+	}
+
 	fun service(name: String, obj: SystemService): String {
 		val secret = "%x".format(Random().nextLong());
 
