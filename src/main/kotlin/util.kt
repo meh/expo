@@ -6,6 +6,7 @@ import de.robv.android.xposed.XposedHelpers;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
+import kotlin.reflect.KClass;
 
 fun ClassLoader.find(name: String): Class<*> {
 	return XposedHelpers.findClass(name, this)
@@ -19,25 +20,29 @@ fun Class<*>.field(type: Class<*>): Field {
 	return XposedHelpers.findFirstFieldByExactType(this, type)
 }
 
+fun Class<*>.field(type: KClass<*>): Field {
+	return XposedHelpers.findFirstFieldByExactType(this, type.java)
+}
+
 fun Class<*>.constructor(vararg types: Class<*>): Constructor<*> {
 	return XposedHelpers.findConstructorBestMatch(this, *types)
+}
+
+fun Class<*>.constructor(vararg types: KClass<*>): Constructor<*> {
+	return XposedHelpers.findConstructorBestMatch(this, *types.map { it.java }.toTypedArray())
 }
 
 fun Class<*>.method(name: String, vararg types: Class<*>): Method {
 	return XposedHelpers.findMethodBestMatch(this, name, *types)
 }
 
+fun Class<*>.method(name: String, vararg types: KClass<*>): Method {
+	return XposedHelpers.findMethodBestMatch(this, name, *types.map { it.java }.toTypedArray())
+}
+
 @Suppress("UNCHECKED_CAST")
 fun<T> Class<*>.new(vararg params: Any): T {
 	return XposedHelpers.newInstance(this, *params) as T
-}
-
-fun Class<*>.__send__(name: String, vararg params: Any?): Any? {
-	return XposedHelpers.callStaticMethod(this, name, *params)
-}
-
-fun<T: Any> T.__send__(name: String, vararg params: Any?): Any? {
-	return XposedHelpers.callMethod(this, name, *params)
 }
 
 fun Method.call(vararg params: Any?): Any? {
