@@ -8,6 +8,7 @@ import de.robv.android.xposed.XposedHelpers;
 
 import android.content.Context;
 import android.os.IBinder;
+import android.os.IInterface;
 
 object Expo {
 	fun log(string: String) {
@@ -26,10 +27,19 @@ object Expo {
 		return XposedHelpers.getParameterTypes(*types)
 	}
 
-	fun service(name: String): IBinder {
-		return find("android.os.ServiceManager")
+	inline fun<reified T: IInterface> service(name: String): T? {
+		val instance = Expo.find("android.os.ServiceManager")
 			.method("getService", String::class)
-			.call("user.${name}") as IBinder
+			.call("user.${name}") as? IBinder
+			?: return null
+
+		val stub = T::class.nestedClasses.find { it.simpleName == "Stub" }
+			?: return null
+
+		val proxy = stub.method("asInterface", IBinder::class).call(instance)
+			?: return null
+
+		return proxy as? T
 	}
 
 	fun service(name: String, obj: SystemService): String {
