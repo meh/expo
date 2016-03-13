@@ -18,7 +18,7 @@ Add expo as a dependency to your `build.gradle`:
 ```groovy
 dependencies {
   ...
-  compile 'com.github.meh:expo:master'
+  compile 'com.github.meh:expo:SNAPSHOT'
 }
 ```
 
@@ -27,6 +27,35 @@ Add the XPosed bridge as a **provided** dependency to your `build.gradle`:
 dependencies {
   ...
 	provided fileTree(dir: 'libs', include: ['XposedBridgeApi-*.jar'])
+}
+```
+
+Example
+-------
+Red clock example from the XPosed Bridge tutorial using expo.
+
+```kotlin
+package meh.expo.example;
+
+import meh.expo.*;
+import android.graphics.Color;
+import android.widget.TextView;
+
+class Example : Package.ILoad {
+  override fun load(param: Package.Load.Parameter) {
+    if (param.name() != "com.android.systemui") {
+      return;
+    }
+
+    param.loader().find("com.android.systemui.statusbar.policy.Clock").hook("updateClock") {
+      after {
+        it.instance<TextView>().let {
+          it.setText("${it.getText()} :)")
+          it.setTextColor(Color.RED);
+        }
+      }
+    }
+  }
 }
 ```
 
